@@ -4,19 +4,23 @@ import { Request, Response, NextFunction } from 'express';
 
 dotenv.config();
 
-export const verifyAuthToken = (
+export async function verifyAuthToken(
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+) {
   try {
-    const token = req.header('jwt');
-    if (!token) {
-      return res.status(401).send('JWT not found!');
-    }
-    jwt.verify(token as string, process.env.TOKEN_SECRET as string);
+    const authorizationHeader = req.headers.authorization as string;
+    const token = authorizationHeader.split(' ')[1];
+    if (!token)
+      return res.status(401).send('Access denied. No token provided.');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const decoded = jwt.verify(
+      token as string,
+      process.env.TOKEN_SECRET as string
+    );
     next();
   } catch (err) {
-    res.status(400).send('Invalid token.');
+    res.status(401).send('Invalid token.');
   }
-};
+}
