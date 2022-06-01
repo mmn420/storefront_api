@@ -53,11 +53,11 @@ export class OrderModel {
       throw new Error(`Cannot delete order. Error${err}`);
     }
   }
-  async updateStatus(id: number, status: string): Promise<Order> {
+  async updateStatus(order_id: number, status: string): Promise<Order> {
     try {
       const conn = await client.connect();
       const sql = 'UPDATE orders SET status=($1) WHERE id=($2)';
-      const result = await conn.query(sql, [status, id]);
+      const result = await conn.query(sql, [status, order_id]);
       const updated_order = result.rows[0];
       conn.release();
       return updated_order;

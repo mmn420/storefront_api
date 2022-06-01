@@ -7,12 +7,12 @@ export type User = {
   username: string;
   password: string;
 };
-
+const user_attributes = 'firstName, lastName, username';
 export class UserModel {
   async index(): Promise<User[]> {
     try {
       const conn = await client.connect();
-      const sql = 'SELECT * FROM users';
+      const sql = `SELECT ${user_attributes} FROM users`;
       const result = await conn.query(sql);
       conn.release();
       return result.rows;
@@ -23,7 +23,7 @@ export class UserModel {
   async show(id: number): Promise<User> {
     try {
       const conn = await client.connect();
-      const sql = 'SELECT * FROM users WHERE id=($1)';
+      const sql = `SELECT ${user_attributes} FROM users WHERE id=($1)`;
       const result = await conn.query(sql, [id]);
       conn.release();
       return result.rows[0];
@@ -47,6 +47,10 @@ export class UserModel {
       conn.release();
       return new_user;
     } catch (err) {
+      console.log(err);
+      if (err.code == '23505') {
+        throw new Error(`User already exists.`);
+      }
       throw new Error(`Cannot create user. Error${err}`);
     }
   }
@@ -64,15 +68,15 @@ export class UserModel {
   }
   async authenticate(
     username: string,
-    passowrd: string
+    password: string
   ): Promise<User | Error> {
     try {
       const conn = await client.connect();
-      const sql = 'SELECT * FROM users WHERE username=($1)';
+      const sql = `SELECT * FROM users WHERE username=($1)`;
       const result = await conn.query(sql, [username]);
       if (result.rows[0]) {
         const user = result.rows[0];
-        const password_check = compare_hash(passowrd, user.passowrd);
+        const password_check = compare_hash(password, user.password);
         if (!password_check) {
           return new Error(`Invalid Password`);
         }

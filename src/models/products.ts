@@ -70,4 +70,16 @@ export class ProductModel {
       throw new Error(`Cannot find this category. Error${err}`);
     }
   }
+  async getTopProducts(): Promise<Product[]> {
+    try {
+      const conn = await client.connect();
+      const sql =
+        'SELECT products.name, SUM(ordersproduct.quantity) AS sum_quantity FROM products INNER JOIN ordersproduct ON products.id=ordersproduct.product_id GROUP BY products.name ORDER BY sum_quantity DESC LIMIT 5';
+      const result = await conn.query(sql);
+      conn.release();
+      return result.rows;
+    } catch (err) {
+      throw new Error('Something went wrong.');
+    }
+  }
 }
