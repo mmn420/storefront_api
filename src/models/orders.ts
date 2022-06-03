@@ -32,7 +32,8 @@ export class OrderModel {
   async create(order: Order): Promise<Order> {
     try {
       const conn = await client.connect();
-      const sql = 'INSERT INTO orders (user_id , status) VALUES ($1, $2)';
+      const sql =
+        'INSERT INTO orders (user_id , status) VALUES ($1, $2) RETURNING *';
       const result = await conn.query(sql, [order.user_id, order.status]);
       const new_order = result.rows[0];
       conn.release();
@@ -44,7 +45,7 @@ export class OrderModel {
   async delete(id: number): Promise<Order> {
     try {
       const conn = await client.connect();
-      const sql = 'DELETE FROM orders WHERE id=($1)';
+      const sql = 'DELETE FROM orders WHERE id=($1) RETURNING *';
       const result = await conn.query(sql, [id]);
       const deleted_order = result.rows[0];
       conn.release();
@@ -56,8 +57,11 @@ export class OrderModel {
   async updateStatus(order_id: number, status: string): Promise<Order> {
     try {
       const conn = await client.connect();
-      const sql = 'UPDATE orders SET status=($1) WHERE id=($2)';
+      const sql = 'UPDATE orders SET status=($1) WHERE id=($2) RETURNING *';
       const result = await conn.query(sql, [status, order_id]);
+      if (!result.rows[0]) {
+        throw new Error(`Cannot find order.`);
+      }
       const updated_order = result.rows[0];
       conn.release();
       return updated_order;

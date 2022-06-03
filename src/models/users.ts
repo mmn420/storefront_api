@@ -35,7 +35,7 @@ export class UserModel {
     try {
       const conn = await client.connect();
       const sql =
-        'INSERT INTO users (firstName , lastName,username,  password) VALUES ($1, $2, $3, $4)';
+        'INSERT INTO users (firstName , lastName,username,  password) VALUES ($1, $2, $3, $4) RETURNING firstName, lastName, username';
       const hashed_password = generate_hash(user.password);
       const result = await conn.query(sql, [
         user.firstName,
@@ -48,6 +48,8 @@ export class UserModel {
       return new_user;
     } catch (err) {
       console.log(err);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (err.code == '23505') {
         throw new Error(`User already exists.`);
       }
@@ -57,7 +59,8 @@ export class UserModel {
   async delete(id: number): Promise<User> {
     try {
       const conn = await client.connect();
-      const sql = 'DELETE FROM users WHERE id=($1)';
+      const sql =
+        'DELETE FROM users WHERE id=($1) RETURNING firstName, lastName, username';
       const result = await conn.query(sql, [id]);
       const deleted_user = result.rows[0];
       conn.release();
