@@ -12,13 +12,19 @@ const {
   ENV,
 } = process.env;
 
-let client: Pool;
-console.log(ENV);
+let client = new Pool({
+  host: POSTGRES_HOST,
+  database: POSTGRES_DB,
+  user: POSTGRES_USER,
+  password: POSTGRES_PASSWORD,
+});
+
+console.log(`Current ENV: ${ENV}`);
 
 if (ENV === 'test') {
   client = new Pool({
     host: POSTGRES_HOST,
-    database: POSTGRES_DB,
+    database: POSTGRES_TEST_DB,
     user: POSTGRES_USER,
     password: POSTGRES_PASSWORD,
   });
@@ -27,11 +33,10 @@ if (ENV === 'test') {
 if (ENV === 'dev') {
   client = new Pool({
     host: POSTGRES_HOST,
-    database: POSTGRES_TEST_DB,
+    database: POSTGRES_DB,
     user: POSTGRES_USER,
     password: POSTGRES_PASSWORD,
   });
 }
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+
 export default client;

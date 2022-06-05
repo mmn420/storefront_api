@@ -12,6 +12,9 @@ const index = async (_req: Request, res: Response) => {
 const show = async (req: Request, res: Response) => {
   try {
     const result = await product.show(parseInt(req.params.id));
+    if (!result) {
+      res.status(404).send('Product not found');
+    }
     res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ err });
@@ -25,7 +28,7 @@ const create = async (req: Request, res: Response) => {
       category: req.body.category,
     };
     const new_product = await product.create(product_template);
-    console.log(new_product);
+
     return res.status(200).json({ new_product });
   } catch (err) {
     res.status(400).json({ err });
@@ -35,6 +38,9 @@ const filterByCategory = async (req: Request, res: Response) => {
   try {
     const category = req.query.category as string;
     const products = await product.filterByCategory(category);
+    if (Object.keys(products).length == 0) {
+      res.status(404).send('No products found');
+    }
     res.status(200).json({ products });
   } catch (err) {
     res.status(400).send(err);
@@ -43,7 +49,11 @@ const filterByCategory = async (req: Request, res: Response) => {
 const topProducts = async (req: Request, res: Response) => {
   try {
     const products = await product.getTopProducts();
-    res.status(200).json({ products });
+    if (Object.keys(products).length == 0) {
+      res.status(404).send('No products found');
+    } else {
+      res.status(200).json({ products });
+    }
   } catch (err) {
     res.status(400).json({ err });
   }

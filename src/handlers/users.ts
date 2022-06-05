@@ -10,7 +10,14 @@ dotenv.config();
 const user = new UserModel();
 
 const generate_JWT = function (user: User): string {
-  const token = jwt.sign({ user }, process.env.TOKEN_SECRET as string);
+  const token = jwt.sign(
+    {
+      firstname: user.firstName,
+      lastname: user.lastName,
+      username: user.username,
+    },
+    process.env.TOKEN_SECRET as string
+  );
   return token;
 };
 const index = async (_req: Request, res: Response) => {

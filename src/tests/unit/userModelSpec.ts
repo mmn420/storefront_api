@@ -21,6 +21,7 @@ describe('User model test suite', () => {
     });
   });
   describe('Check the return values of each method', () => {
+    let new_user: User;
     const test_user: User = {
       firstName: 'fName',
       lastName: 'lName',
@@ -29,8 +30,8 @@ describe('User model test suite', () => {
     };
 
     it('Should create a new user', async () => {
-      const new_user = await user_model.create(test_user);
-      expect(new_user.username).toBe('testuser');
+      new_user = await user_model.create(test_user);
+      expect(new_user.username).toBe(test_user.username);
     });
     it('Should index all users', async () => {
       const users = await user_model.index();
@@ -38,7 +39,7 @@ describe('User model test suite', () => {
       expect(Object.keys(users).length).not.toBe(0);
     });
     it('Should return a user with a specific id', async () => {
-      const user = await user_model.show(1);
+      const user = await user_model.show(new_user.id as unknown as number);
       expect(user.username).toBe(test_user.username);
     });
     it('Should authenticate the user and return the username if the password is correct', async () => {

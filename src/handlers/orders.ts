@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import { OrderModel, Order } from '../models/orders';
 import { verifyAuthToken } from '../middleware/authenticate';
-import { json } from 'body-parser';
 
 const order = new OrderModel();
 
@@ -15,8 +14,9 @@ const show = async (req: Request, res: Response) => {
     const result = await order.show(parseInt(req.params.id));
     if (!result) {
       res.status(404).send('User not found');
+    } else {
+      res.status(200).json(result);
     }
-    res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ err });
   }
@@ -38,8 +38,9 @@ const delete_order = async (req: Request, res: Response) => {
     const deleted_order = await order.delete(parseInt(req.params.id));
     if (!deleted_order) {
       res.status(404).send('Order not found');
+    } else {
+      res.status(200).json({ deleted_order });
     }
-    res.status(200).json({ deleted_order });
   } catch (err) {
     res.status(400).json({ err });
   }
@@ -75,18 +76,19 @@ const addProductToOrder = async (req: Request, res: Response) => {
 
 const updateStatus = async (req: Request, res: Response) => {
   try {
-    if (req.body.status !== 'active' || req.body.status !== 'complete') {
+    if (req.body.status != 'active' && req.body.status != 'complete') {
       res
         .status(400)
         .send(
           'Invalid status please send "active" or "complete" as the status'
         );
+    } else {
+      const updated_order = await order.updateStatus(
+        parseInt(req.body.order_id),
+        req.body.status
+      );
+      res.status(200).json({ updated_order });
     }
-    const updated_order = await order.updateStatus(
-      parseInt(req.body.order_id),
-      req.body.status
-    );
-    res.status(200).json({ updated_order });
   } catch (err) {
     res.status(400).json({ err });
   }

@@ -8,7 +8,7 @@
     "jasmine": "jasmine",
     "build": "npx tsc",
     "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./dist --onSuccess \"node ./dist/server.js\"",
-    "test": "cross-env ENV=test && db-migrate --env test up && npm run build && npm run jasmine && db-migrate --env test down *",
+    "test": "npx tsc && cross-env ENV=test  db-migrate --env test down * &&  db-migrate --env test up && cross-env ENV=test jasmine",
     "tsc": "tsc",
     "prettier": " prettier --config .prettierrc src/**/*.ts --write ",
     "lint": "eslint . --ext .ts"

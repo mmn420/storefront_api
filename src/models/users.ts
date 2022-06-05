@@ -35,7 +35,7 @@ export class UserModel {
     try {
       const conn = await client.connect();
       const sql =
-        'INSERT INTO users (firstName , lastName,username,  password) VALUES ($1, $2, $3, $4) RETURNING firstName, lastName, username';
+        'INSERT INTO users (firstName , lastName,username,  password) VALUES ($1, $2, $3, $4) RETURNING id, firstName, lastName, username';
       const hashed_password = generate_hash(user.password);
       const result = await conn.query(sql, [
         user.firstName,
@@ -47,7 +47,6 @@ export class UserModel {
       conn.release();
       return new_user;
     } catch (err) {
-      console.log(err);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (err.code == '23505') {

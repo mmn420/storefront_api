@@ -24,6 +24,7 @@ app.get('/', function (req: Request, res: Response) {
 user_routes(app);
 product_routes(app);
 order_routes(app);
-app.listen(3000, function () {
+const server = app.listen(3000, function () {
   console.log(`starting app on: ${address}`);
 });
+export { server, app };

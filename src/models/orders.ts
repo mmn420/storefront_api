@@ -5,6 +5,12 @@ export type Order = {
   user_id: number;
   status: string;
 };
+export type orderProducts = {
+  id?: number;
+  quantity: number;
+  order_id: number;
+  product_id: number;
+};
 
 export class OrderModel {
   async index(): Promise<Order[]> {
@@ -93,7 +99,7 @@ export class OrderModel {
     quantity: number,
     order_id: number,
     product_id: number
-  ): Promise<Order> {
+  ): Promise<orderProducts> {
     try {
       const ordersql = 'SELECT * FROM orders WHERE id=($1)';
       const conn = await client.connect();
@@ -115,9 +121,9 @@ export class OrderModel {
     try {
       const conn = await client.connect();
       const sql =
-        'INSERT INTO ordersProduct (quantity, order_id, product_id) VALUES ($1, $2, $3)';
+        'INSERT INTO ordersProduct (quantity, order_id, product_id) VALUES ($1, $2, $3) RETURNING *';
       const result = await conn.query(sql, [quantity, order_id, product_id]);
-      const order = result.rows[0];
+      const order: orderProducts = result.rows[0];
       conn.release();
       return order;
     } catch (err) {
