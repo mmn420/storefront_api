@@ -2,10 +2,10 @@
 
 ## Getting Started
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+This is an example API for a E-commerce website
 
-## Required Technologies
-Your application must make use of the following libraries:
+## Used Technologies
+
 - Postgres for the database
 - Node/Express for the application logic
 - dotenv from npm for managing environment variables
@@ -13,42 +13,55 @@ Your application must make use of the following libraries:
 - jsonwebtoken from npm for working with JWTs
 - jasmine from npm for testing
 
-## Steps to Completion
+## Setting up the Project
 
-### 1. Plan to Meet Requirements
+- [Download](postgresql.org/download/) and Install PostgresSQL database and follow the steps in the [guide](https://www.postgresqltutorial.com/postgresql-getting-started/install-postgresql/).
+- The application is preconfigured to run with a PostgresSQL DB with the following settings:
+  - Host: localhost
+  - Port: 5432
+- Install node dependencies using `npm i`
+- Create a .env file following the example in .envexample file.
+- Create the databases for development and testing:
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+  - Open the psql command-line tool:
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+  - In the Windows Command Prompt, run the command:
+    - psql -U userName
+    - Enter your password when prompted.
+  - `CREATE DATABASE storefront_db WITH ENCODING 'UTF8'`;
+  - `CREATE DATABASE test_db WITH ENCODING 'UTF8'`;
+  - Connect to the database using `\c databaseName`
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+- Install db-migrate globally using `npm i db-migrate -g` to run the migrations.
+- Run `db-migrate up` to create the database tables.
+- Run the script `npm run watch` to start the application
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+## Scripts
 
-### 2.  DB Creation and Migrations
+- `npm run watch` to start the server.
+- `npm run test` to start the tests.
+- `npm run prettier` to run prettier.
+- `npm run lint` to run ESlint.
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+## Endpoints
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
-
-### 3. Models
-
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
-
-### 4. Express Handlers
-
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
-
-### 5. JWTs
-
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
-
-### 6. QA and `README.md`
-
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
-
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
+| HTTP VERB | PATH                                                 | USED FOR                        |
+| --------- | ---------------------------------------------------- | ------------------------------- |
+| POST      | localhost:3000/authenticate                          | authenticate/login              |
+| GET       | localhost:3000/users                                 | index[token required]           |
+| POST      | localhost:3000/users                                 | create                          |
+| GET       | localhost:3000/users/:id                             | show [token required]           |
+| DELETE    | localhost:3000/users/:id                             | delete [token required]         |
+| GET       | localhost:3000/products                              | index                           |
+| POST      | localhost:3000/products                              | create [token required]         |
+| GET       | localhost:3000/products/:id                          | show                            |
+| GET       | localhost:3000/products-category?category={category} | filterByCategory                |
+| GET       | localhost:3000/products/top                          | topProducts                     |
+| GET       | localhost:3000/orders                                | index [token required]          |
+| POST      | localhost:3000/orders                                | create [token required]         |
+| GET       | localhost:3000/orders/:id                            | show [token required]           |
+| DELETE    | localhost:3000/orders/:id                            | delete [token required]         |
+| GET       | localhost:3000/orders/user/:user_id                  | orderByUser [token required]    |
+| GET       | localhost:3000/orders/complete/:user_id              | completeOrders [token required] |
+| POST      | localhost:3000/orders/addProduct                     | addProduct [token required]     |
+| PATCH     | localhost:3000/orders/orders/update                  | updateStatus [token required]   |
