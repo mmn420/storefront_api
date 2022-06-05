@@ -52,3 +52,48 @@ These are the notes from a meeting with the frontend developer that describe wha
 - quantity of each product in the order
 - user_id
 - status of order (active or complete)
+
+#### OrdersProduct
+
+- id
+- product id
+- quantity
+- order id
+
+## Database Schema
+
+### users Table
+
+| Column    | Type               | Nullable        |
+| --------- | ------------------ | --------------- |
+| id        | SERIAL PRIMARY KEY | NOT NULL        |
+| username  | VARCHAR (60)       | UNIQUE NOT NULL |
+| firstName | VARCHAR (60)       | NOT NULL        |
+| lastName  | VARCHAR (60)       | NOT NULL        |
+| password  | VARCHAR            | NOT NULL        |
+
+### products Table
+
+| Column   | Type               | Nullable |
+| -------- | ------------------ | -------- |
+| id       | SERIAL PRIMARY KEY | NOT NULL |
+| name     | TEXT               | NOT NULL |
+| category | VARCHAR (60)       | NOT NULL |
+| price    | INTEGER            | NOT NULL |
+
+### orders Table
+
+| Column  | Type                        | Nullable |
+| ------- | --------------------------- | -------- |
+| id      | SERIAL PRIMARY KEY          | NOT NULL |
+| status  | VARCHAR(64)                 | NOT NULL |
+| user_id | bigint REFERENCES users(id) | NOT NULL |
+
+### ordersProduct Table
+
+| Column     | Type                           | Nullable |
+| ---------- | ------------------------------ | -------- |
+| id         | SERIAL PRIMARY KEY             | YES      |
+| quantity   | INTEGER                        | YES      |
+| user_id    | bigint REFERENCES users(id)    | YES      |
+| product_id | bigint REFERENCES products(id) | YES      |
